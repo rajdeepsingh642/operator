@@ -1,0 +1,22 @@
+kubectl create -f manifests/setup
+
+kubectl wait --for=condition=Established --timeout=60s crd/prometheuses.monitoring.coreos.com
+kubectl wait --for=condition=Established --timeout=60s crd/servicemonitors.monitoring.coreos.com
+kubectl wait --for=condition=Established --timeout=60s crd/alertmanagers.monitoring.coreos.com
+
+kubectl apply -f manifests/
+
+kubectl get pods -n monitoring
+
+kubectl port-forward -n monitoring svc/prometheus-k8s 9090
+
+kubectl port-forward -n monitoring svc/grafana 3000
+
+http://prometheus-k8s.monitoring.svc:9090
+
+
+
+rate(container_cpu_usage_seconds_total{job="kubelet", image!="", container!="POD"}[5m])
+
+
+container_memory_usage_bytes{job="kubelet", image!="", container!="POD"}
